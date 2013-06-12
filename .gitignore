@@ -1,0 +1,11 @@
+.DS_Store
+.vagrant
+node_modules
+Berksfile.lock
+lib
+lib-cov
+coverage.html
+forever.log
+out.log
+err.log
+config.json
