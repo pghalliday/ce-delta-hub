@@ -6,7 +6,9 @@ module.exports = class Server
       nextId: 0
       accounts: Object.create null
     @ceFrontEndPublisher = zmq.socket 'pub'
+    @ceFrontEndPublisher.setsockopt 'linger', 0
     @ceFrontEndXReply = zmq.socket 'xrep'
+    @ceFrontEndXReply.setsockopt 'linger', 0
     @ceFrontEndXReply.on 'message', =>
       args = Array.apply null, arguments
       # send the state
@@ -19,13 +21,13 @@ module.exports = class Server
     callback()
 
   start: (callback) =>
-    @ceFrontEndXReply.bind 'tcp://*:' + @options.ceFrontEndXReply, (error) =>
+    @ceFrontEndPublisher.bind 'tcp://*:' + @options.ceFrontEndPublisher, (error) =>
       if error
         callback error
       else
-        @ceFrontEndPublisher.bind 'tcp://*:' + @options.ceFrontEndPublisher, (error) =>
+        @ceFrontEndXReply.bind 'tcp://*:' + @options.ceFrontEndXReply, (error) =>
           if error
-            @ceFrontEndXReply.close()
+            @ceFrontEndPublisher.close()
             callback error
           else
             callback()

@@ -27,18 +27,18 @@ describe 'Server', ->
           expect(error).to.not.be.ok
           done()
 
-    it 'should error if it cannot bind to ceFrontEndXReply address', (done) ->
-      server = new Server
-        ceFrontEndPublisher: '8000'
-        ceFrontEndXReply: 'invalid'
-      server.start (error) ->
-        error.message.should.equal 'Invalid argument'
-        done()
-
     it 'should error if it cannot bind to ceFrontEndPublisher address', (done) ->
       server = new Server
         ceFrontEndPublisher: 'invalid'
         ceFrontEndXReply: '8001'
+      server.start (error) ->
+        error.message.should.equal 'Invalid argument'
+        done()
+
+    it 'should error if it cannot bind to ceFrontEndXReply address', (done) ->
+      server = new Server
+        ceFrontEndPublisher: '8000'
+        ceFrontEndXReply: 'invalid'
       server.start (error) ->
         error.message.should.equal 'Invalid argument'
         done()
