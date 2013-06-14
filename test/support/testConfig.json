@@ -1,4 +1,6 @@
 {
-  "ce-front-end-publisher": "8000",
-  "ce-front-end-xreply": "8001"
+  "ce-front-end": {
+    "stream": 7000,
+    "state": 7001
+  }
 }

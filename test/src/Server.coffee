@@ -5,13 +5,15 @@ expect = chai.expect
 Server = require '../../src/Server'
 
 zmq = require 'zmq'
+ports = require '../support/ports'
 
 describe 'Server', ->
   describe '#stop', ->
     it 'should not error if the server has not been started', (done) ->
       server = new Server
-        ceFrontEndPublisher: '8000'
-        ceFrontEndXReply: '8001'
+        'ce-front-end':
+          stream: ports()
+          state: ports()
       server.stop (error) ->
         expect(error).to.not.be.ok
         done()
@@ -19,52 +21,59 @@ describe 'Server', ->
   describe '#start', ->
     it 'should start and be stoppable', (done) ->
       server = new Server
-        ceFrontEndPublisher: '8000'
-        ceFrontEndXReply: '8001'
+        'ce-front-end':
+          stream: ports()
+          state: ports()
       server.start (error) ->
         expect(error).to.not.be.ok
         server.stop (error) ->
           expect(error).to.not.be.ok
           done()
 
-    it 'should error if it cannot bind to ceFrontEndPublisher address', (done) ->
+    it 'should error if it cannot bind to ce-front-end stream port', (done) ->
       server = new Server
-        ceFrontEndPublisher: 'invalid'
-        ceFrontEndXReply: '8001'
+        'ce-front-end':
+          stream: 'invalid'
+          state: ports()
       server.start (error) ->
         error.message.should.equal 'Invalid argument'
         done()
 
-    it 'should error if it cannot bind to ceFrontEndXReply address', (done) ->
+    it 'should error if it cannot bind to ce-front-end state port', (done) ->
       server = new Server
-        ceFrontEndPublisher: '8000'
-        ceFrontEndXReply: 'invalid'
+        'ce-front-end':
+          stream: ports()
+          state: 'invalid'
       server.start (error) ->
         error.message.should.equal 'Invalid argument'
         done()
 
   describe 'when started', ->
     beforeEach (done) ->
-      @ceFrontEndXRequest = zmq.socket 'xreq'
-      @ceFrontEndSubscriber = zmq.socket 'sub'
-      @ceFrontEndSubscriber.subscribe ''
+      @ceFrontEnd = 
+        stream: zmq.socket 'sub'
+        state: zmq.socket 'xreq'
+      @ceFrontEnd.stream.subscribe ''
+      ceFrontEndStreamPort = ports()
+      ceFrontEndStatePort = ports()
       @server = new Server
-        ceFrontEndPublisher: '8000'
-        ceFrontEndXReply: '8001'
+        'ce-front-end':
+          stream: ceFrontEndStreamPort
+          state: ceFrontEndStatePort
       @server.start (error) =>
-        @ceFrontEndSubscriber.connect 'tcp://localhost:8000'
-        @ceFrontEndXRequest.connect 'tcp://localhost:8001'
+        @ceFrontEnd.stream.connect 'tcp://localhost:' + ceFrontEndStreamPort
+        @ceFrontEnd.state.connect 'tcp://localhost:' + ceFrontEndStatePort
         done()
 
     afterEach (done) ->
-      @ceFrontEndXRequest.close()
-      @ceFrontEndSubscriber.close()
+      @ceFrontEnd.stream.close()
+      @ceFrontEnd.state.close()
       @server.stop done
 
     it 'should respond to requests with the current market state', (done) ->
-      @ceFrontEndXRequest.on 'message', (message) =>
+      @ceFrontEnd.state.on 'message', (message) =>
         state = JSON.parse message
         state.nextId.should.equal 0
         state.accounts.should.be.an 'object'
         done()
-      @ceFrontEndXRequest.send ''
+      @ceFrontEnd.state.send ''

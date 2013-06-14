@@ -5,29 +5,30 @@ module.exports = class Server
     @state = 
       nextId: 0
       accounts: Object.create null
-    @ceFrontEndPublisher = zmq.socket 'pub'
-    @ceFrontEndPublisher.setsockopt 'linger', 0
-    @ceFrontEndXReply = zmq.socket 'xrep'
-    @ceFrontEndXReply.setsockopt 'linger', 0
-    @ceFrontEndXReply.on 'message', =>
+    @ceFrontEnd = 
+      stream: zmq.socket 'pub'
+      state: zmq.socket 'xrep'
+    @ceFrontEnd.stream.setsockopt 'linger', 0
+    @ceFrontEnd.state.setsockopt 'linger', 0
+    @ceFrontEnd.state.on 'message', =>
       args = Array.apply null, arguments
       # send the state
       args[1] = JSON.stringify @state
-      @ceFrontEndXReply.send args
+      @ceFrontEnd.state.send args
 
   stop: (callback) =>
-    @ceFrontEndPublisher.close()
-    @ceFrontEndXReply.close()
+    @ceFrontEnd.stream.close()
+    @ceFrontEnd.state.close()
     callback()
 
   start: (callback) =>
-    @ceFrontEndPublisher.bind 'tcp://*:' + @options.ceFrontEndPublisher, (error) =>
+    @ceFrontEnd.stream.bind 'tcp://*:' + @options['ce-front-end'].stream, (error) =>
       if error
         callback error
       else
-        @ceFrontEndXReply.bind 'tcp://*:' + @options.ceFrontEndXReply, (error) =>
+        @ceFrontEnd.state.bind 'tcp://*:' + @options['ce-front-end'].state, (error) =>
           if error
-            @ceFrontEndPublisher.close()
+            @ceFrontEnd.state.close()
             callback error
           else
             callback()
