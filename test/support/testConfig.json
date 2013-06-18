@@ -2,5 +2,8 @@
   "ce-front-end": {
     "stream": 7000,
     "state": 7001
+  },
+  "ce-engine": {
+    "stream": 7002
   }
 }

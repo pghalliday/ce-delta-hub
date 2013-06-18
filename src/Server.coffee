@@ -8,17 +8,21 @@ module.exports = class Server
     @ceFrontEnd = 
       stream: zmq.socket 'pub'
       state: zmq.socket 'xrep'
+    @ceEngine = 
+      stream: zmq.socket 'pull'
     @ceFrontEnd.stream.setsockopt 'linger', 0
     @ceFrontEnd.state.setsockopt 'linger', 0
-    @ceFrontEnd.state.on 'message', =>
-      args = Array.apply null, arguments
+    @ceFrontEnd.state.on 'message', (ref) =>
       # send the state
-      args[1] = JSON.stringify @state
-      @ceFrontEnd.state.send args
+      @ceFrontEnd.state.send [ref, JSON.stringify @state]
+    @ceEngine.stream.setsockopt 'linger', 0
+    @ceEngine.stream.on 'message', (message) =>
+      @ceFrontEnd.stream.send message
 
   stop: (callback) =>
     @ceFrontEnd.stream.close()
     @ceFrontEnd.state.close()
+    @ceEngine.stream.close()
     callback()
 
   start: (callback) =>
@@ -28,7 +32,13 @@ module.exports = class Server
       else
         @ceFrontEnd.state.bind 'tcp://*:' + @options['ce-front-end'].state, (error) =>
           if error
-            @ceFrontEnd.state.close()
+            @ceFrontEnd.stream.close()
             callback error
           else
-            callback()
+            @ceEngine.stream.bind 'tcp://*:' + @options['ce-engine'].stream, (error) =>
+              if error
+                @ceFrontEnd.stream.close()
+                @ceFrontEnd.state.close()
+                callback error
+              else
+                callback()
