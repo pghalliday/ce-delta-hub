@@ -60,7 +60,7 @@ All deltas follow this format
 {
   "account": "[account]",
   "id": "1234567890"
-  "[delta]": {
+  "[operation|trade]": {
     ...
   }
 }
@@ -71,34 +71,42 @@ As the same deltas will be received from multiple `ce-engine` instances, only 1 
 
 The following deltas are supported and will be forwarded.
 
-#### `increase`
+#### `deposit`
 
-A balance increase
+On successful deposit
 
 ```javascript
 {
-  "account": "[account]",
   "id": "1234567890",
-  "increase": {
-    "currency": "EUR",
-    "amount": "5000"
+  "operation": {
+    "account": "Peter",
+    "id": "9876543210",
+    "result": "success",
+    "deposit": {
+      "currency": "EUR",
+      "amount": "5000"
+    }
   }
 }
 ```
 
-#### `add`
+#### `submit`
 
-An added order
+On a successfully submitted order
 
 ```javascript
 {
-  "account": "[account]",
   "id": "1234567890",
-  "add": {
-    "bidCurrency": "BTC",
-    "offerCurrency": "EUR",
-    "bidPrice": "100",
-    "bidAmount": "50"
+  "operation": {
+    "account": "Peter",
+    "id": "9876543210",
+    "result": "success",
+    "submit": {
+      "bidCurrency": "BTC",
+      "offerCurrency": "EUR",
+      "bidPrice": "100",
+      "bidAmount": "50"
+    }
   }
 }
 ```
@@ -107,42 +115,53 @@ An added order
 
 ### Deltas
 
-#### `decrease`
+#### `withdraw`
 
-A balance decrease
+On successful withdrawal
 
 ```javascript
 {
-  "account": "[account]",
   "id": "1234567890",
-  "decrease": {
-    "currency": "EUR",
-    "amount": "5000"
+  "operation": {
+    "account": "Peter",
+    "id": "9876543210",
+    "result": "success",
+    "withdraw": {
+      "currency": "EUR",
+      "amount": "5000"
+    }
   }
 }
 ```
 
-#### `remove`
+#### `cancel`
 
-A removed order
+On successfully cancelled order
 
 ```javascript
 {
-  "account": "[account]",
   "id": "1234567890",
-  "remove": {
-    ?
+  "operation": {
+    "account": "Peter",
+    "id": "9876543210",
+    "result": "success",
+    "cancel": {
+      "id": "64523428495"
+    }
   }
 }
 ```
 
 #### `trade`
 
-An executed trade
+On trade execution
 
 ```javascript
 {
-  ?
+  "id": "1234567890",
+  "trade": {
+    ?
+  }
 }
 ```
 

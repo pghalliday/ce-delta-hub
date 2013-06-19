@@ -105,14 +105,22 @@ describe 'Server', ->
 
     it 'should publish deltas received from ce-engine instances', (done) ->
       @ceFrontEnd.stream.on 'message', (message) =>
-        increase = JSON.parse message
-        increase.account.should.equal 'Peter'
-        increase.currency.should.equal 'EUR'
-        increase.amount.should.equal '5000'
-        increase.id.should.equal 0
+        delta = JSON.parse message
+        delta.id.should.equal 0
+        operation = delta.operation
+        operation.account.should.equal 'Peter'
+        operation.id.should.equal 0
+        operation.result.should.equal 'success'
+        deposit = operation.deposit
+        deposit.currency.should.equal 'EUR'
+        deposit.amount.should.equal '5000'
         done()
       @ceEngine.stream.send JSON.stringify
-        account: 'Peter'
-        currency: 'EUR'
-        amount: '5000'
-        id: 0      
+        id: 0
+        operation: 
+          account: 'Peter'
+          id: 0
+          result: 'success'
+          deposit:
+            currency: 'EUR'
+            amount: '5000'     
