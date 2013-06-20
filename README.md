@@ -153,7 +153,7 @@ On successfully cancelled order
     "timestamp": 1371737390976,
     "result": "success",
     "cancel": {
-      "sequence": "64523428495"
+      "sequence": 64523428495
     }
   }
 }
