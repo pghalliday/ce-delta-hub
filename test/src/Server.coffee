@@ -16,6 +16,7 @@ describe 'Server', ->
           state: ports()
         'ce-engine':
           stream: ports()
+          state: ports()
       server.stop (error) ->
         expect(error).to.not.be.ok
         done()
@@ -28,6 +29,7 @@ describe 'Server', ->
           state: ports()
         'ce-engine':
           stream: ports()
+          state: ports()
       server.start (error) ->
         expect(error).to.not.be.ok
         server.stop (error) ->
@@ -41,6 +43,7 @@ describe 'Server', ->
           state: ports()
         'ce-engine':
           stream: ports()
+          state: ports()
       server.start (error) ->
         error.message.should.equal 'Invalid argument'
         done()
@@ -52,6 +55,7 @@ describe 'Server', ->
           state: 'invalid'
         'ce-engine':
           stream: ports()
+          state: ports()
       server.start (error) ->
         error.message.should.equal 'Invalid argument'
         done()
@@ -63,6 +67,19 @@ describe 'Server', ->
           state: ports()
         'ce-engine':
           stream: 'invalid'
+          state: ports()
+      server.start (error) ->
+        error.message.should.equal 'Invalid argument'
+        done()
+
+    it 'should error if it cannot bind to ce-engine state port', (done) ->
+      server = new Server
+        'ce-front-end':
+          stream: ports()
+          state: ports()
+        'ce-engine':
+          stream: ports()
+          state: 'invalid'
       server.start (error) ->
         error.message.should.equal 'Invalid argument'
         done()
@@ -77,22 +94,28 @@ describe 'Server', ->
       ceFrontEndStatePort = ports()
       @ceEngine = 
         stream: zmq.socket 'push'
+        state: zmq.socket 'router'
       ceEngineStreamPort = ports()
+      ceEngineStatePort = ports()
       @server = new Server
         'ce-front-end':
           stream: ceFrontEndStreamPort
           state: ceFrontEndStatePort
         'ce-engine':
           stream: ceEngineStreamPort
+          state: ceEngineStatePort
       @server.start (error) =>
         @ceFrontEnd.stream.connect 'tcp://localhost:' + ceFrontEndStreamPort
         @ceFrontEnd.state.connect 'tcp://localhost:' + ceFrontEndStatePort
         @ceEngine.stream.connect 'tcp://localhost:' + ceEngineStreamPort
+        @ceEngine.state.connect 'tcp://localhost:' + ceEngineStatePort
         done()
 
     afterEach (done) ->
       @ceFrontEnd.stream.close()
       @ceFrontEnd.state.close()
+      @ceEngine.stream.close()
+      @ceEngine.state.close()
       @server.stop done
 
     it 'should respond to requests with the current market state', (done) ->

@@ -4,6 +4,7 @@
     "state": 7001
   },
   "ce-engine": {
-    "stream": 7002
+    "stream": 7002,
+    "state": 7003
   }
 }

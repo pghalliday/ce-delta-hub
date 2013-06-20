@@ -10,12 +10,14 @@ module.exports = class Server
       state: zmq.socket 'router'
     @ceEngine = 
       stream: zmq.socket 'pull'
+      state: zmq.socket 'dealer'
     @ceFrontEnd.stream.setsockopt 'linger', 0
     @ceFrontEnd.state.setsockopt 'linger', 0
     @ceFrontEnd.state.on 'message', (ref) =>
       # send the state
       @ceFrontEnd.state.send [ref, JSON.stringify @state]
     @ceEngine.stream.setsockopt 'linger', 0
+    @ceEngine.state.setsockopt 'linger', 0
     @ceEngine.stream.on 'message', (message) =>
       @ceFrontEnd.stream.send message
 
@@ -41,4 +43,11 @@ module.exports = class Server
                 @ceFrontEnd.state.close()
                 callback error
               else
-                callback()
+                @ceEngine.state.bind 'tcp://*:' + @options['ce-engine'].state, (error) =>
+                  if error
+                    @ceFrontEnd.stream.close()
+                    @ceFrontEnd.state.close()
+                    @ceEngine.stream.close()
+                    callback error
+                  else
+                    callback()
