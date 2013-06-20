@@ -23,7 +23,7 @@ configuration should be placed in a file called `config.json` in the root of the
   // Requests current market state and listens for deltas from `ce-engine` instances
   "ce-engine": {
     // Port for 0MQ `pull` socket 
-    "stream": 7002
+    "stream": 7002,
     // Port for 0MQ `dealer` socket 
     "state": 7003
   }
