@@ -58,15 +58,14 @@ All deltas follow this format
 
 ```javascript
 {
-  "account": "[account]",
-  "id": "1234567890"
+  "sequence": "1234567890"
   "[operation|trade]": {
     ...
   }
 }
 ```
 
-Where the `id` must be sequential. Seen `id`s will be ignored, unseen `id`s will be applied once the internal state has caught up.
+Where the `sequence` must be sequential. Seen `sequence`s will be ignored, unseen `sequence`s will be applied once the internal state has caught up.
 As the same deltas will be received from multiple `ce-engine` instances, only 1 of each delta will be forwarded to the `ce-front-end` instances.
 
 The following deltas are supported and will be forwarded.
@@ -77,10 +76,12 @@ On successful deposit
 
 ```javascript
 {
-  "id": "1234567890",
+  "sequence": 1234567890,
   "operation": {
+    "reference": "550e8400-e29b-41d4-a716-446655440000",
     "account": "Peter",
-    "id": "9876543210",
+    "sequence": 9876543210,
+    "timestamp": 1371737390976,
     "result": "success",
     "deposit": {
       "currency": "EUR",
@@ -96,10 +97,12 @@ On a successfully submitted order
 
 ```javascript
 {
-  "id": "1234567890",
+  "sequence": 1234567890,
   "operation": {
+    "reference": "550e8400-e29b-41d4-a716-446655440000",
     "account": "Peter",
-    "id": "9876543210",
+    "sequence": 9876543210,
+    "timestamp": 1371737390976,
     "result": "success",
     "submit": {
       "bidCurrency": "BTC",
@@ -121,10 +124,12 @@ On successful withdrawal
 
 ```javascript
 {
-  "id": "1234567890",
+  "sequence": 1234567890,
   "operation": {
+    "reference": "550e8400-e29b-41d4-a716-446655440000",
     "account": "Peter",
-    "id": "9876543210",
+    "sequence": 9876543210,
+    "timestamp": 1371737390976,
     "result": "success",
     "withdraw": {
       "currency": "EUR",
@@ -140,13 +145,15 @@ On successfully cancelled order
 
 ```javascript
 {
-  "id": "1234567890",
+  "sequence": 1234567890,
   "operation": {
+    "reference": "550e8400-e29b-41d4-a716-446655440000",
     "account": "Peter",
-    "id": "9876543210",
+    "sequence": 9876543210,
+    "timestamp": 1371737390976,
     "result": "success",
     "cancel": {
-      "id": "64523428495"
+      "sequence": "64523428495"
     }
   }
 }
@@ -158,7 +165,7 @@ On trade execution
 
 ```javascript
 {
-  "id": "1234567890",
+  "sequence": 1234567890,
   "trade": {
     ?
   }
