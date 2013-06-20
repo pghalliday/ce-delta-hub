@@ -3,7 +3,7 @@ zmq = require 'zmq'
 module.exports = class Server
   constructor: (@options) ->
     @state = 
-      nextId: 0
+      nextSequence: 0
       accounts: Object.create null
     @ceFrontEnd = 
       stream: zmq.socket 'pub'

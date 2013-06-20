@@ -23,7 +23,7 @@ describe 'ce-delta-hub', ->
       ceFrontEnd.state.connect 'tcp://localhost:7001'
       ceFrontEnd.state.on 'message', (message) =>
         state = JSON.parse message
-        state.nextId.should.equal 0
+        state.nextSequence.should.equal 0
         state.accounts.should.be.an 'object'
         childDaemon.stop (error) =>
           expect(error).to.not.be.ok

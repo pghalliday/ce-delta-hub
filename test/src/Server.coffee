@@ -98,7 +98,7 @@ describe 'Server', ->
     it 'should respond to requests with the current market state', (done) ->
       @ceFrontEnd.state.on 'message', (message) =>
         state = JSON.parse message
-        state.nextId.should.equal 0
+        state.nextSequence.should.equal 0
         state.accounts.should.be.an 'object'
         done()
       @ceFrontEnd.state.send ''
@@ -106,20 +106,20 @@ describe 'Server', ->
     it 'should publish deltas received from ce-engine instances', (done) ->
       @ceFrontEnd.stream.on 'message', (message) =>
         delta = JSON.parse message
-        delta.id.should.equal 0
+        delta.sequence.should.equal 0
         operation = delta.operation
         operation.account.should.equal 'Peter'
-        operation.id.should.equal 0
+        operation.sequence.should.equal 0
         operation.result.should.equal 'success'
         deposit = operation.deposit
         deposit.currency.should.equal 'EUR'
         deposit.amount.should.equal '5000'
         done()
       @ceEngine.stream.send JSON.stringify
-        id: 0
+        sequence: 0
         operation: 
           account: 'Peter'
-          id: 0
+          sequence: 0
           result: 'success'
           deposit:
             currency: 'EUR'
