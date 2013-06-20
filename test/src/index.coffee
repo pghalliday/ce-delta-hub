@@ -10,7 +10,7 @@ describe 'ce-delta-hub', ->
     this.timeout 5000
     ceFrontEnd = 
       stream: zmq.socket 'sub'
-      state: zmq.socket 'xreq'
+      state: zmq.socket 'dealer'
     ceFrontEnd.stream.subscribe ''
     childDaemon = new ChildDaemon 'node', [
       'lib/src/index.js',

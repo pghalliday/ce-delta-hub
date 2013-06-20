@@ -71,7 +71,7 @@ describe 'Server', ->
     beforeEach (done) ->
       @ceFrontEnd = 
         stream: zmq.socket 'sub'
-        state: zmq.socket 'xreq'
+        state: zmq.socket 'dealer'
       @ceFrontEnd.stream.subscribe ''
       ceFrontEndStreamPort = ports()
       ceFrontEndStatePort = ports()

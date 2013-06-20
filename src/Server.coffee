@@ -7,7 +7,7 @@ module.exports = class Server
       accounts: Object.create null
     @ceFrontEnd = 
       stream: zmq.socket 'pub'
-      state: zmq.socket 'xrep'
+      state: zmq.socket 'router'
     @ceEngine = 
       stream: zmq.socket 'pull'
     @ceFrontEnd.stream.setsockopt 'linger', 0
