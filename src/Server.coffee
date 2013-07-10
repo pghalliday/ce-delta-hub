@@ -1,10 +1,12 @@
 zmq = require 'zmq'
 
+State = require('currency-market').State
+
 module.exports = class Server
   constructor: (@options) ->
-    @state = 
-      nextSequence: 0
-      accounts: Object.create null
+    @state = new State
+      commission:
+        account: @options.commission.account
     @ceFrontEnd = 
       stream: zmq.socket 'pub'
       state: zmq.socket 'router'

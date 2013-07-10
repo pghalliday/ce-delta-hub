@@ -5,6 +5,8 @@ expect = chai.expect
 ChildDaemon = require 'child-daemon'
 zmq = require 'zmq'
 
+State = require('currency-market').State
+
 describe 'ce-delta-hub', ->
   it 'should take parameters from a file', (done) ->
     this.timeout 5000
@@ -22,9 +24,11 @@ describe 'ce-delta-hub', ->
       ceFrontEnd.stream.connect 'tcp://localhost:7000'
       ceFrontEnd.state.connect 'tcp://localhost:7001'
       ceFrontEnd.state.on 'message', (message) =>
-        state = JSON.parse message
-        state.nextSequence.should.equal 0
+        state = new State
+          json: message
+        state.nextDeltaSequence.should.equal 0
         state.accounts.should.be.an 'object'
+        state.books.should.be.an 'object'
         childDaemon.stop (error) =>
           expect(error).to.not.be.ok
           ceFrontEnd.stream.close()

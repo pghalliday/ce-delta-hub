@@ -13,6 +13,10 @@ configuration should be placed in a file called `config.json` in the root of the
 
 ```javascript
 {
+  // Deposits commission payments into this account ID
+  "commission": {
+    "account": "commission"
+  },
   // Supplies the current market state and streams deltas to `ce-front-end` instances
   "ce-front-end": {
     // Port for 0MQ `pub` socket 
