@@ -65,7 +65,12 @@ All deltas follow this format
 ```javascript
 {
   "sequence": 1234567890
-  "[operation|trade]": {
+  "operation": {
+    // operation parameters
+    ...
+  },
+  "result": {
+    // result parameters
     ...
   }
 }
