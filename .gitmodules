@@ -1,3 +1,0 @@
-[submodule "cookbooks/ce-delta-hub"]
-	path = cookbooks/ce-delta-hub
-	url = https://github.com/pghalliday/cookbook-ce-delta-hub.git
